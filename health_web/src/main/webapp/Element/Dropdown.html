@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dropdown</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="./index.css">
+    <!-- import Vue before Element -->
+    <script src="./vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="./index.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <el-dropdown :hide-on-click="false" @command="handleCommand">
+          <span class="el-dropdown-link">
+            下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+        <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="黄金糕">黄金糕</el-dropdown-item>
+            <el-dropdown-item>狮子头</el-dropdown-item>
+            <el-dropdown-item>螺蛳粉</el-dropdown-item>
+            <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+            <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+        </el-dropdown-menu>
+    </el-dropdown>
+</div>
+<style>
+    .el-dropdown-link {
+        cursor: pointer;
+        color: #409EFF;
+    }
+
+    .el-icon-arrow-down {
+        font-size: 12px;
+    }
+</style>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        methods: {
+            handleCommand(command) {
+                this.$message('click on item ' + command);
+            }
+        }
+    })
+</script>
+</html>

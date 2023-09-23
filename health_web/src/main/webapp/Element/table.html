@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>table</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="./index.css">
+    <!-- import Vue before Element -->
+    <script src="./vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="./index.js"></script>
+</head>
+<body>
+<div id="app">
+    <template>
+        <div>
+            <el-table :data="tableData"
+                      height="250"
+                      border
+                      style="width: 100%">
+                <el-table-column prop="date1" label="日期" width="180"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="180"></el-table-column>
+                <el-table-column prop="address" label="地址"></el-table-column>
+            </el-table>
+            <!--size-change: 每页显示大小变化时调用handleSizeChange方法
+                current-change: 页码发生变化时调用 handleCurrentChange
+                current-page： 当前页码
+                page-sizes: 页面大小的列表选择框
+                layout: 分页工具栏显示的格式
+                total: 总计录数
+            -->
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="page"
+                    :page-sizes="[10, 20, 30, 40]"
+                    :page-size="size"
+                    layout="total, prev, pager, next, jumper"
+                    :total="total">
+            </el-pagination>
+        </div>
+    </template>
+</div>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        created(){
+            // 发送请求
+            // 把响应回来的数据进行绑定
+            //this.tableData = response.data.data;
+            // 服务端
+            // [] 对应的list, {} 对应的实体类或map集合
+            // [{[{},{[]}]}] => list<Map<key,List<Map<String,Object>>>>>
+        },
+        data() {
+            return {
+                page: 1,
+                size: 10,
+                total: 100,
+                tableData: [{
+                    date1: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date1: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date1: '2016-05-04',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date1: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date1: '2016-05-08',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date1: '2016-05-06',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date1: '2016-05-07',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }]
+            }
+        },
+        methods: {
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+            }
+        }
+    })
+</script>
+</html>

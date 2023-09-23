@@ -1,0 +1,97 @@
+<?xml version = "1.0" encoding = "utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.PackageDao">
+    <insert id="add" parameterType="Package">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into t_package(name,code,helpCode,sex,age,price,remark,attention,img)
+        values(#{name},#{code},#{helpCode},#{sex},#{age},#{price},#{remark},#{attention},#{img})
+    </insert>
+    <insert id="setPackageAndCheckGroup" parameterType="int">
+        insert into t_package_checkgroup values(#{pkgId},#{checkgroupId})
+    </insert>
+    <select id="findByCondition" parameterType="string" resultType="Package">
+        select * from t_package
+        <where>
+            <if test="value!=null and value.length>0">
+                code like #{value} or name like #{value} or helpCode like #{value}
+            </if>
+        </where>
+    </select>
+    <delete id="deletePackageCheckGroupByPackageId" parameterType="int">
+        delete from t_package_checkgroup where package_id=#{id}
+    </delete>
+    <delete id="deleteById" parameterType="int">
+        delete from t_package where id=#{id}
+    </delete>
+    <update id="update" parameterType="Package">
+        update t_package set code=#{code},
+        name=#{name},
+        helpCode=#{helpCode},
+        sex=#{sex},
+        remark=#{remark},
+        attention=#{attention}
+        where id=#{id}
+    </update>
+    <!--<select id="findById" parameterType="int" resultType="Package">
+        select * from t_package where id=#{id}
+    </select>-->
+    <select id="getCheckGroupIds" parameterType="int" resultType="int">
+        select checkgroup_id from t_package_checkgroup where package_id=#{id}
+    </select>
+    <select id="findAll" resultType="package">
+        select * from t_package
+    </select>
+
+    <resultMap id="pkgCheckGroupItem" type="Package" extends="PackageResultMap">
+        <collection property="checkGroups" ofType="CheckGroup" javaType="ArrayList" column="checkgroup_id">
+            <id column="checkgroup_id" property="id"/>
+            <result column="checkgroup_name" property="name"/>
+            <result column="checkgroup_remark" property="remark"/>
+            <collection property="checkItems" ofType="CheckItem" javaType="ArrayList" column="checkitem_id">
+                <id column="checkitem_id" property="id"/>
+                <result column="checkitem_name" property="name"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findById" parameterType="int" resultMap="pkgCheckGroupItem">
+        select p.*,cg.id as checkgroup_id,cg.name as checkgroup_name,cg.remark as checkgroup_remark,
+        ci.id as checkitem_id,ci.name as checkitem_name from t_package p, t_checkgroup cg,t_checkitem ci,
+        t_package_checkgroup pcg,t_checkgroup_checkitem cgci where p.id=pcg.package_id and cg.id=pcg.checkgroup_id
+        and cg.id=cgci.checkgroup_id and ci.id=cgci.checkitem_id and p.id=#{id}
+    </select>
+    <select id="findById2" parameterType="int" resultMap="PackageAndCheckGroupResultMap">
+        select * from t_package where id=#{id}
+    </select>
+    <resultMap id="PackageResultMap" type="Package">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="helpCode" property="helpCode"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="price" property="price"/>
+        <result column="remark" property="remark"/>
+        <result column="attention" property="attention"/>
+        <result column="img" property="img"/>
+    </resultMap>
+    <resultMap id="PackageAndCheckGroupResultMap" type="Package" extends="PackageResultMap">
+        <!--通过套餐编号查询套餐下的检查组-->
+        <collection property="checkGroups" javaType="ArrayList"
+                    ofType="CheckGroup" column="id" select="com.itheima.dao.CheckGroupDao.findByPackageId">
+        </collection>
+    </resultMap>
+    <select id="findPackageCount" resultType="map">
+        select p.name,count(o.id) as value from t_order o,t_package p
+        where o.package_id=p.id group by p.name
+    </select>
+    <!--查询热门套餐-->
+    <select id="getHotPackages" resultType="Map">
+        select t.name,t.remark,t.count,t.count/t2.total as proportion from
+         (select p.name,count(1) as count,p.remark from t_package p,t_order o where p.id=o.package_id group by o.package_id) t,
+         (select count(1) as total from t_order)t2 order by t.count desc limit 0,4
+    </select>
+</mapper>
